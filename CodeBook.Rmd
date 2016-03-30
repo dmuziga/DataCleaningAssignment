@@ -1,53 +1,61 @@
+---
+title: "Tutorial1"
+author: "Danny Muziga"
+date: "March 30, 2016"
+output: html_document
+---
 
-######################################################### Question 1############################################
+This is my first Markdown document 
+
+let's load some data 
+
+# Question 1 : Merging the training and the test sets to create one data set 
+
+```{r}
+
 # Load activity labels + features
 activityNames <- read.table("activity_labels.txt", header = FALSE)
-#CHANGING THE ACtivityName from the  factor to character
+## CHANGING THE ACtivityName from the  factor to character
 activityNames$V2 <- as.character(activityNames$V2)
 
 featureNames <- read.table("features.txt")
 
 
-#reading the data set for the testdatain R
+# Reading the data set for the testdatain R
 testset <- read.table("test/X_test.txt", header = FALSE)
 
+dim (testset)
 testsetname <- read.table(file = "test/y_test.txt", 
                           header = FALSE)
                           
-
 dim(testsetname)
 
 subject_test <- read.table(file = "test/subject_test.txt", 
                            header = FALSE)
-                           
-#merging the data 
+ dim(subject_test)                    
+# Merging the data 
 
 testdataset <- cbind(testset, testsetname,subject_test)
 
 dim(testdataset)
 
-#reading the data set for the training datasetin R
+#Reading the data set for the training datasetin R
 trainset <- read.table( 
         file = "train/X_train.txt",
         header = FALSE)
 
+dim(trainset)
 trainsetname <- read.table(file = "train/y_train.txt", 
                            header = FALSE)
                            
 
-dim(testsetname)
+dim(trainsetname)
 
 subject_train<- read.table(file = "train/subject_train.txt", 
                            header = FALSE)
-                           
-
-dim(trainsetname)
+   
 dim(subject_train)
-dim(trainset) 
 
-#traindataset <- cbind(trainset,trainsetname,subject_train)
-
-# we equalise the name in order to get the a dataframe which have the same column names
 
 #combine training and test dataset
 subject <- rbind(subject_train, subject_test)
@@ -63,14 +71,11 @@ colnames(subject) <- "Subject"
 #Merge Data
 mergeData <- cbind(features,activity, subject)
 
+dim(mergeData)
 
-
-#===================================== Question 2 ###################
-
-
-
-features$V2 <- as.character(features$V2)
-
+```
+# Question 2 : Extracts only the measurements on the mean and standard deviation for each measurement. 
+```{r}
 # return the position of the value that have mean and  std in the feature column 
 featuresNeeded <- grep(".*mean.*|.*std.*", names(mergeData), ignore.case = TRUE)
 
@@ -84,7 +89,10 @@ class(featuresNeeded)
 
 dim(extractedFeatures)
 
-#===================== Question 3##########################
+```
+# Question 3: Uses Descriptive activity names to name the activities in the data set 
+
+```{r}
 
 # Uses descriptive Activity names to name the activities in the dataset
 
@@ -92,8 +100,10 @@ colnames(extractedFeatures) = gsub('-mean', 'Mean',colnames(extractedFeatures))
 colnames(extractedFeatures) = gsub('-std', 'Standard_Deviation',colnames(extractedFeatures))
 colnames(extractedFeatures) <- gsub('[-()]', '', colnames(extractedFeatures))
 
+```
 
-# ==========Question 4 #########################
+# Question 4 : Appropriately labels the data set with descritive variable Names
+```{r}
 
 #Appropriately labels the data set with descriptive variable names 
 # we remove the Abreviation to put on full name.
@@ -102,7 +112,12 @@ colnames(extractedFeatures) <- gsub('Acc', 'Accelerometer',colnames(extractedFea
 colnames(extractedFeatures) <- gsub('Gyro', 'Gyroscope',colnames(extractedFeatures))
 colnames(extractedFeatures) <- gsub('BodyBody', 'Body',colnames(extractedFeatures))
 colnames(extractedFeatures) <- gsub('Subject1', 'Subject',colnames(extractedFeatures))
-# ====== Question 5 ######################
+
+```
+# Question 5:  From the data set in Question 4, create a second independent tidy data set with the average of each variable for each activity and each subject 
+
+```{r}
+
 library(reshape2)
 
 #I firstly make the Activity and Subject as our Id then we  use dcast to calculate the mean 
@@ -114,3 +129,4 @@ newtidy <- newtidy[order(newtidy$Subject,newtidy$Activity),]
 #write the result to a file 
 write.table(newtidy, file = "TidyDataSet.csv", sep = ",",col.names = TRUE)
 
+```
